@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Friends Journey Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-container {
+            padding: 30px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 10px;
+            font-weight: 600;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .friendship-level {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .level-acquaintance { background: #e3f2fd; color: #1976d2; }
+        .level-friend { background: #e8f5e8; color: #388e3c; }
+        .level-close { background: #fff3e0; color: #f57c00; }
+        .level-best { background: #fce4ec; color: #c2185b; }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 My Journey to 100 Friends 🌟</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalFriends">0</div>
+                    <div>Total Friends</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="progressPercent">0%</div>
+                    <div>Progress</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="remaining">100</div>
+                    <div>Remaining</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="friendName">Friend's Name</label>
+                    <input type="text" id="friendName" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label for="friendClass">Class/Subject</label>
+                    <input type="text" id="friendClass" placeholder="e.g., Math, Biology, Lunch">
+                </div>
+                <div class="form-group">
+                    <label for="friendshipLevel">Friendship Level</label>
+                    <select id="friendshipLevel">
+                        <option value="acquaintance">Acquaintance</option>
+                        <option value="friend">Friend</option>
+                        <option value="close">Close Friend</option>
+                        <option value="best">Best Friend</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="hobbies">Hobbies/Interests</label>
+                    <input type="text" id="hobbies" placeholder="e.g., Soccer, Art, Gaming">
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" rows="2" placeholder="How you met, memorable moments, etc."></textarea>
+                </div>
+                <div class="form-group" style="flex: 0;">
+                    <button onclick="addFriend()">Add Friend</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="filters">
+                <div class="form-group" style="max-width: 200px;">
+                    <label for="levelFilter">Filter by Level</label>
+                    <select id="levelFilter" onchange="filterFriends()">
+                        <option value="all">All Levels</option>
+                        <option value="acquaintance">Acquaintance</option>
+                        <option value="friend">Friend</option>
+                        <option value="close">Close Friend</option>
+                        <option value="best">Best Friend</option>
+                    </select>
+                </div>
+                <div class="form-group" style="max-width: 200px;">
+                    <label for="searchFilter">Search</label>
+                    <input type="text" id="searchFilter" placeholder="Search names, classes, hobbies..." oninput="filterFriends()">
+                </div>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <h3>🚀 Ready to start your friend journey?</h3>
+                <p>Add your first friend above to get started!</p>
+            </div>
+
+            <table id="friendsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Class/Subject</th>
+                        <th>Level</th>
+                        <th>Hobbies</th>
+                        <th>Notes</th>
+                        <th>Date Added</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="friendsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let friends = [];
+        let friendCounter = 1;
+
+        function updateStats() {
+            const total = friends.length;
+            const percent = Math.round((total / 100) * 100);
+            const remaining = Math.max(0, 100 - total);
+
+            document.getElementById('totalFriends').textContent = total;
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('remaining').textContent = remaining;
+            document.getElementById('progressFill').style
